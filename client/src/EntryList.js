@@ -1,7 +1,29 @@
-import { readEntries } from './data';
+import { useEffect, useState } from 'react';
 
 export default function EntryList({ onCreate, onEdit }) {
-  const entries = readEntries();
+  const [entries, setEntries] = useState();
+  const [error, setError] = useState();
+
+  useEffect(() => {
+    async function fetchEntries() {
+      try {
+        const res = await fetch('/api/journals');
+        if (!res.ok) {
+          throw new Error(`fetch Error ${res.status}`);
+        }
+        const journalEntries = await res.json();
+        setEntries(journalEntries);
+      } catch (err) {
+        setError(err);
+      }
+    }
+    fetchEntries();
+  }, []);
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
   return (
     <div className="container">
       <div className="row">
