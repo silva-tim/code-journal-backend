@@ -48,6 +48,7 @@ export default function EntryForm({ entry, onSubmit }) {
         setError(err);
       }
     }
+    onSubmit();
   }
 
   async function handleDelete() {
@@ -61,6 +62,7 @@ export default function EntryForm({ entry, onSubmit }) {
     } catch (err) {
       setError(err);
     }
+    onSubmit();
   }
 
   if (error) {

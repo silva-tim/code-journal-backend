@@ -20,8 +20,12 @@ export default function EntryList({ onCreate, onEdit }) {
     fetchEntries();
   }, []);
 
+  if (!error && !entries) {
+    return <div>Loading...</div>;
+  }
+
   if (error) {
-    return <div>{error}</div>;
+    return <div>Error</div>;
   }
 
   return (
