@@ -60,6 +60,9 @@ app.delete('/api/journals/:entryId', async (req, res, next) => {
     const params = [entryId];
     const result = await db.query(sql, params);
     const [journal] = result.rows;
+    if (!journal) {
+      throw new ClientError('404', 'Not a valid ID');
+    }
     res.sendStatus(204);
   } catch (err) {
     next(err);
@@ -85,6 +88,9 @@ app.put('/api/journals/:entryId', async (req, res, next) => {
     const params = [title, notes, photoUrl, entryId];
     const result = await db.query(sql, params);
     const [journal] = result.rows;
+    if (!journal) {
+      throw new ClientError('404', 'Not a valid ID');
+    }
     res.status(200).json(journal);
   } catch (err) {
     next(err);
