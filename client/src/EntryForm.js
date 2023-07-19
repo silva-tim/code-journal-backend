@@ -28,6 +28,7 @@ export default function EntryForm({ entry, onSubmit }) {
         if (!res.ok) {
           throw new Error(`fetch Error ${res.status}`);
         }
+        onSubmit();
       } catch (err) {
         setError(err);
       }
@@ -44,11 +45,11 @@ export default function EntryForm({ entry, onSubmit }) {
         if (!res.ok) {
           throw new Error(`fetch Error ${res.status}`);
         }
+        onSubmit();
       } catch (err) {
         setError(err);
       }
     }
-    onSubmit();
   }
 
   async function handleDelete() {
@@ -59,14 +60,18 @@ export default function EntryForm({ entry, onSubmit }) {
       if (!res.ok) {
         throw new Error(`fetch Error ${res.status}`);
       }
+      onSubmit();
     } catch (err) {
       setError(err);
     }
-    onSubmit();
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return (
+      <div>
+        Error! {error instanceof Error ? error.message : 'Unknown error'}
+      </div>
+    );
   }
 
   return (
