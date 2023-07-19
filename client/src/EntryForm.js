@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { addEntry, removeEntry, updateEntry } from './data';
 
 /**
  * Form that adds or edits an entry.
@@ -11,21 +10,68 @@ export default function EntryForm({ entry, onSubmit }) {
   const [photoUrl, setPhotoUrl] = useState(entry?.photoUrl ?? '');
   const [notes, setNotes] = useState(entry?.notes ?? '');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState();
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     const newEntry = { title, photoUrl, notes };
     if (entry) {
-      updateEntry({ ...entry, ...newEntry });
+      try {
+        const options = {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newEntry),
+        };
+        const res = await fetch(`/api/journals/${entry.entryId}`, options);
+        if (!res.ok) {
+          throw new Error(`fetch Error ${res.status}`);
+        }
+        onSubmit();
+      } catch (err) {
+        setError(err);
+      }
     } else {
-      addEntry(newEntry);
+      try {
+        const options = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newEntry),
+        };
+        const res = await fetch(`/api/journals`, options);
+        if (!res.ok) {
+          throw new Error(`fetch Error ${res.status}`);
+        }
+        onSubmit();
+      } catch (err) {
+        setError(err);
+      }
     }
-    onSubmit();
   }
 
-  function handleDelete() {
-    removeEntry(entry.entryId);
-    onSubmit();
+  async function handleDelete() {
+    try {
+      const res = await fetch(`/api/journals/${entry.entryId}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) {
+        throw new Error(`fetch Error ${res.status}`);
+      }
+      onSubmit();
+    } catch (err) {
+      setError(err);
+    }
+  }
+
+  if (error) {
+    return (
+      <div>
+        Error! {error instanceof Error ? error.message : 'Unknown error'}
+      </div>
+    );
   }
 
   return (
